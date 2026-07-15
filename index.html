@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>2026 FIFA World Cup Highlights — 世界杯集锦</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #0b1426 0%, #1a237e 50%, #b71c1c 100%);
+    min-height: 100vh;
+    color: #e8e8e8;
+  }
+
+  /* Header */
+  .header {
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #ffd700, #ffeb3b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .logo-sub { font-size: 12px; color: #aaa; margin-top: 2px; letter-spacing: 1px; }
+  .nav { display: flex; gap: 24px; }
+  .nav a {
+    color: #ccc; text-decoration: none; font-size: 14px;
+    padding: 6px 4px; border-bottom: 2px solid transparent;
+    transition: 0.2s;
+  }
+  .nav a:hover, .nav a.active { color: #ffd740; border-color: #ffd740; }
+
+  /* Hero / Featured */
+  .hero {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+  }
+  .featured {
+    background: linear-gradient(135deg, rgba(183,28,28,0.9), rgba(26,35,126,0.9));
+    border-radius: 20px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .featured-video { position: relative; background: #000; }
+  .featured-video video {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .featured-badge {
+    position: absolute; top: 16px; left: 16px;
+    background: #ffd740; color: #000;
+    font-size: 11px; font-weight: 800;
+    padding: 4px 10px; border-radius: 4px;
+    letter-spacing: 1px;
+  }
+  .featured-info {
+    padding: 40px 40px 40px 36px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .stage-label {
+    display: inline-block;
+    background: rgba(255,215,64,0.15);
+    color: #ffd740;
+    font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 4px;
+    letter-spacing: 2px; margin-bottom: 16px; width: fit-content;
+  }
+  .match-title {
+    font-size: 28px; font-weight: 900; line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .score-line {
+    display: flex; align-items: center; gap: 20px;
+    font-size: 44px; font-weight: 900;
+    margin: 12px 0;
+    font-family: "Helvetica Neue", monospace;
+  }
+  .score-line .team { font-size: 20px; font-weight: 700; color: #ccc; }
+  .vs { color: #666; font-size: 16px; }
+  .score { color: #ffd740; }
+  .score.winner { color: #4cff4c; }
+  .meta { color: #aaa; font-size: 13px; line-height: 1.8; }
+  .cta {
+    margin-top: 24px;
+    background: linear-gradient(to right, #ffd740, #ffab00);
+    color: #000; border: none; padding: 12px 28px;
+    font-weight: 800; border-radius: 8px; cursor: pointer;
+    font-size: 14px; width: fit-content;
+    transition: 0.2s;
+  }
+  .cta:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(255,215,64,0.4); }
+
+  /* Section titles */
+  .section-title {
+    max-width: 1200px; margin: 56px auto 20px; padding: 0 24px;
+    font-size: 22px; font-weight: 800;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(to right, rgba(255,255,255,0.2), transparent);
+  }
+
+  /* Tabs */
+  .tabs {
+    max-width: 1200px; margin: 0 auto 24px; padding: 0 24px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .tab {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #aaa; padding: 8px 18px; border-radius: 20px;
+    font-size: 13px; cursor: pointer; transition: 0.2s;
+  }
+  .tab.active, .tab:hover {
+    background: #ffd740; color: #000; border-color: #ffd740; font-weight: 700;
+  }
+
+  /* Grid */
+  .grid {
+    max-width: 1200px; margin: 0 auto; padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: 0.25s;
+    cursor: pointer;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+  }
+  .card-video {
+    position: relative; background: #000; aspect-ratio: 16/9;
+  }
+  .card-video video { width: 100%; height: 100%; object-fit: cover; }
+  .card-video .play-icon {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play-icon::after {
+    content: "▶"; font-size: 40px; color: white;
+    background: rgba(0,0,0,0.5); border-radius: 50%;
+    width: 60px; height: 60px;
+    display: flex; align-items: center; justify-content: center;
+    text-indent: 4px;
+  }
+  .card-body { padding: 14px 16px; }
+  .card-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .card-stage {
+    font-size: 11px; font-weight: 700; color: #ffd740;
+    background: rgba(255,215,64,0.12); padding: 2px 8px; border-radius: 4px;
+  }
+  .card-date { font-size: 11px; color: #888; }
+  .card-match { font-size: 15px; font-weight: 700; margin: 6px 0; }
+  .card-score { font-size: 20px; font-weight: 900; color: #ffd740; margin: 4px 0; }
+  .card-commentator { font-size: 12px; color: #888; margin-top: 8px; }
+  .card-actions {
+    display: flex; gap: 10px; margin-top: 12px;
+  }
+  .btn {
+    font-size: 12px; padding: 6px 12px; border-radius: 6px;
+    border: none; cursor: pointer; font-weight: 600;
+  }
+  .btn-primary { background: #ffd740; color: #000; }
+  .btn-ghost { background: rgba(255,255,255,0.1); color: #ccc; }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding: 30px; font-size: 12px;
+    color: #666; border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .featured { grid-template-columns: 1fr; }
+    .featured-video { min-height: 240px; }
+    .featured-info { padding: 24px; }
+    .score-line { font-size: 32px; }
+    .grid { grid-template-columns: 1fr; }
+    .header { padding: 14px 20px; flex-wrap: wrap; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <div class="logo">⚽ FIFA WORLD CUP 2026</div>
+    <div class="logo-sub">美加墨世界杯 · 赛事集锦</div>
+  </div>
+  <nav class="nav">
+    <a href="#" class="active">集锦</a>
+    <a href="#">赛程</a>
+    <a href="#">数据</a>
+    <a href="#">球队</a>
+  </nav>
+</div>
+
+<!-- Hero Featured -->
+<div class="hero">
+  <div class="featured">
+    <div class="featured-video">
+      <div class="featured-badge">⭐ 今日精选</div>
+      <video controls poster="" preload="metadata">
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="featured-info">
+      <div class="stage-label">半决赛 · SEMIFINAL</div>
+      <div class="match-title">法国 <span style="color:#ff5252">0 : 2</span> 西班牙</div>
+      <div class="score-line">
+        <span class="team">FRA</span>
+        <span class="score">0</span>
+        <span class="vs">—</span>
+        <span class="score winner">2</span>
+        <span class="team">ESP</span>
+      </div>
+      <div class="meta">
+        📅 2026.07.15 &nbsp;·&nbsp; 🕐 03:00<br/>
+        🏟️ 国际足联世界杯 · 半决赛<br/>
+        🎙️ 评论员：贺炜
+      </div>
+      <button class="cta" onclick="document.querySelector('.featured-video video').play()">
+        ▶ 立即观看精选
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Stage Tabs -->
+<div class="section-title">🏆 赛事集锦 · MATCH HIGHLIGHTS</div>
+<div class="tabs">
+  <button class="tab" onclick="filter('all')">全部</button>
+  <button class="tab" onclick="filter('r16')">1/16决赛</button>
+  <button class="tab" onclick="filter('qf')">1/8决赛</button>
+  <button class="tab" onclick="filter('sf')">1/4决赛</button>
+  <button class="tab active" onclick="filter('sf2')">半决赛</button>
+</div>
+
+<!-- Cards Grid -->
+<div class="grid" id="grid">
+
+  <!-- 2026.06.29 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.06.29 03:00</span>
+      </div>
+      <div class="card-match">南非 0 : 1 加拿大</div>
+      <div class="card-score">0 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：孙思辰</div>
+    </div>
+  </div>
+
+  <!-- 2026.06.30 巴日 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.06.30 01:00</span>
+      </div>
+      <div class="card-match">巴西 2 : 1 日本</div>
+      <div class="card-score">2 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：牛银昊</div>
+    </div>
+  </div>
+
+  <!-- 2026.06.30 德巴 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.06.30 04:30</span>
+      </div>
+      <div class="card-match">德国 1 : 1 (3:4) 巴拉圭</div>
+      <div class="card-score">点球决胜</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 2026.06.30 荷摩洛哥 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.06.30 09:00</span>
+      </div>
+      <div class="card-match">荷兰 1 : 1 (2:3) 摩洛哥</div>
+      <div class="card-score">点球决胜</div>
+      <div class="card-commentator">🎙️ 评论员：朱晓雨</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.01 法瑞 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.01 05:00</span>
+      </div>
+      <div class="card-match">法国 3 : 0 瑞典</div>
+      <div class="card-score">3 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.01 墨厄瓜 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.01 10:00</span>
+      </div>
+      <div class="card-match">墨西哥 2 : 0 厄瓜多尔</div>
+      <div class="card-score">2 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：朱晓雨</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.02 英格兰 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.02 00:00</span>
+      </div>
+      <div class="card-match">英格兰 2 : 1 刚果（金）</div>
+      <div class="card-score">2 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：牛银昊</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.02 比利时 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.02 04:00</span>
+      </div>
+      <div class="card-match">比利时 3 : 2 塞内加尔</div>
+      <div class="card-score">3 : 2</div>
+      <div class="card-commentator">🎙️ 评论员：李晨明</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.02 美国 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.02 08:00</span>
+      </div>
+      <div class="card-match">美国 2 : 0 波黑</div>
+      <div class="card-score">2 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：孙思辰</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.03 西班牙 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.03 03:00</span>
+      </div>
+      <div class="card-match">西班牙 3 : 0 奥地利</div>
+      <div class="card-score">3 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：刘嘉远</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.03 葡萄牙 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.03 07:00</span>
+      </div>
+      <div class="card-match">葡萄牙 2 : 1 克罗地亚</div>
+      <div class="card-score">2 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：朱晓雨</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.03 瑞士 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.03 11:00</span>
+      </div>
+      <div class="card-match">瑞士 2 : 0 阿尔及利亚</div>
+      <div class="card-score">2 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：李晨明</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.04 澳大利亚 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.04 02:00</span>
+      </div>
+      <div class="card-match">澳大利亚 1 : 1 (2:4) 埃及</div>
+      <div class="card-score">点球决胜</div>
+      <div class="card-commentator">🎙️ 评论员：牛银昊</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.04 阿根廷 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.04 06:00</span>
+      </div>
+      <div class="card-match">阿根廷 3 : 2 佛得角</div>
+      <div class="card-score">3 : 2</div>
+      <div class="card-commentator">🎙️ 评论员：刘嘉远</div>
+    </div>
+  </div>
+
+  <!-- 2026.07.04 哥伦比亚 -->
+  <div class="card" data-stage="r16">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/16决赛</span>
+        <span class="card-date">2026.07.04 09:30</span>
+      </div>
+      <div class="card-match">哥伦比亚 1 : 0 加纳</div>
+      <div class="card-score">1 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：孙思辰</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 加拿大摩洛哥 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.05 01:00</span>
+      </div>
+      <div class="card-match">加拿大 0 : 3 摩洛哥</div>
+      <div class="card-score">0 : 3</div>
+      <div class="card-commentator">🎙️ 评论员：牛银昊</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 巴拉圭法国 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.05 05:00</span>
+      </div>
+      <div class="card-match">巴拉圭 0 : 1 法国</div>
+      <div class="card-score">0 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 巴西挪威 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.06 04:00</span>
+      </div>
+      <div class="card-match">巴西 1 : 2 挪威</div>
+      <div class="card-score">1 : 2 ⚡冷门</div>
+      <div class="card-commentator">🎙️ 评论员：刘嘉远</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 墨西哥英格兰 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.06 09:00</span>
+      </div>
+      <div class="card-match">墨西哥 2 : 3 英格兰</div>
+      <div class="card-score">2 : 3 🔥绝杀</div>
+      <div class="card-commentator">🎙️ 评论员：朱晓雨</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 葡萄牙西班牙 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.07 03:00</span>
+      </div>
+      <div class="card-match">葡萄牙 0 : 1 西班牙</div>
+      <div class="card-score">0 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：牛银昊</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 美国比利时 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.07 08:00</span>
+      </div>
+      <div class="card-match">美国 1 : 4 比利时</div>
+      <div class="card-score">1 : 4</div>
+      <div class="card-commentator">🎙️ 评论员：孙思辰</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 阿根廷埃及 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.08 00:00</span>
+      </div>
+      <div class="card-match">阿根廷 3 : 2 埃及</div>
+      <div class="card-score">3 : 2 🎯</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 1/8决赛 瑞士哥伦比亚 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/8决赛</span>
+        <span class="card-date">2026.07.08 04:00</span>
+      </div>
+      <div class="card-match">瑞士 0 : 0 (4:3) 哥伦比亚</div>
+      <div class="card-score">点球决胜</div>
+      <div class="card-commentator">🎙️ 评论员：刘嘉远</div>
+    </div>
+  </div>
+
+  <!-- 1/4决赛 法摩洛哥 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/4决赛</span>
+        <span class="card-date">2026.07.10 04:00</span>
+      </div>
+      <div class="card-match">法国 2 : 0 摩洛哥</div>
+      <div class="card-score">2 : 0</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 1/4决赛 西班比利 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/4决赛</span>
+        <span class="card-date">2026.07.11 03:00</span>
+      </div>
+      <div class="card-match">西班牙 2 : 1 比利时</div>
+      <div class="card-score">2 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：孙思辰</div>
+    </div>
+  </div>
+
+  <!-- 1/4决赛 挪威英格兰 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/4决赛</span>
+        <span class="card-date">2026.07.12 05:00</span>
+      </div>
+      <div class="card-match">挪威 1 : 2 英格兰</div>
+      <div class="card-score">1 : 2</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 1/4决赛 阿根廷瑞士 -->
+  <div class="card" data-stage="qf">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">1/4决赛</span>
+        <span class="card-date">2026.07.12 09:00</span>
+      </div>
+      <div class="card-match">阿根廷 3 : 1 瑞士</div>
+      <div class="card-score">3 : 1</div>
+      <div class="card-commentator">🎙️ 评论员：牛银昊</div>
+    </div>
+  </div>
+
+  <!-- 半决赛 法国西班牙 -->
+  <div class="card" data-stage="sf2">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/26bf79650ad692757616a87ta519e7f4.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">半决赛</span>
+        <span class="card-date">2026.07.15 03:00</span>
+      </div>
+      <div class="card-match">法国 0 : 2 西班牙</div>
+      <div class="card-score">0 : 2 🏆</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 半决赛 英格兰阿根廷 (进行中) -->
+  <div class="card" data-stage="sf2">
+    <div class="card-video">
+      <div class="play-icon"></div>
+      <video preload="metadata" controls>
+        <source src="http://mov.bn.netease.com/openapi/20170609/74e40b1f97e57f69ea61a53cd9e96835.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">半决赛 · 直播</span>
+        <span class="card-date">2026.07.16 03:00</span>
+      </div>
+      <div class="card-match">英格兰 VS 阿根廷</div>
+      <div class="card-score" style="color:#ffd740">即将开赛</div>
+      <div class="card-commentator">🎙️ 评论员：孙思辰 · 视频直播</div>
+      <div class="card-actions">
+        <button class="btn btn-primary">🔔 预约提醒</button>
+        <button class="btn btn-ghost">📺 预约直播</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  © 2026 FIFA World Cup 2026 · 美加墨世界杯 · 赛事集锦 &nbsp;|&nbsp;
+  数据来源：央视网 · worldcup.cctv.com &nbsp;|&nbsp;
+  Designed by yww006
+</div>
+
+<script>
+  function filter(type) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.querySelectorAll('.card').forEach(card => {
+      if (type === 'all' || card.dataset.stage === type) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
