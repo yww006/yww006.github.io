@@ -261,7 +261,9 @@
   <button class="tab" onclick="filter('r16')">1/16决赛</button>
   <button class="tab" onclick="filter('qf')">1/8决赛</button>
   <button class="tab" onclick="filter('sf')">1/4决赛</button>
-  <button class="tab active" onclick="filter('sf2')">半决赛</button>
+  <button class="tab" onclick="filter('sf2')">半决赛</button>
+  <button class="tab" onclick="filter('third')">三四名决赛</button>
+  <button class="tab" onclick="filter('final')">决赛</button>
 </div>
 
 <!-- Cards Grid -->
@@ -821,6 +823,24 @@
       </div>
       <div class="card-match">法国 1 : 3 英格兰</div>
       <div class="card-score">1 : 3</div>
+      <div class="card-commentator">🎙️ 评论员：贺炜</div>
+    </div>
+  </div>
+
+  <!-- 决赛 西班牙阿根廷 -->
+  <div class="card" data-stage="final">
+    <div class="card-video">
+      <video preload="metadata" controls>
+        <source src="videos/final_spain_argentina.mp4" type="video/mp4" />
+      </video>
+    </div>
+    <div class="card-body">
+      <div class="card-meta">
+        <span class="card-stage">🏆 决赛</span>
+        <span class="card-date">2026.07.20 03:00</span>
+      </div>
+      <div class="card-match">西班牙 2 : 1 阿根廷</div>
+      <div class="card-score">2 : 1 (加时) 🏆</div>
       <div class="card-commentator">🎙️ 评论员：贺炜</div>
     </div>
   </div>
