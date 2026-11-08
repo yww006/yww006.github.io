@@ -27,6 +27,7 @@
   let currentBgIndex = 0;
   let postsData = [];
   let isArticlePage = false;
+  let basePath = '/gle/';  // 新增：基础路径，由 initBasePath() 初始化
 
   // ===== DOM 元素 =====
   const elements = {
@@ -42,6 +43,7 @@
   function init() {
     cacheElements();
     detectPageType();
+    initBasePath();  // 新增：初始化基础路径
     initBackground();
     initParticles();
     loadPosts();
@@ -58,6 +60,25 @@
 
   function detectPageType() {
     isArticlePage = document.body.classList.contains('article-page');
+  }
+
+  // 新增：从 <base href> 或当前路径获取基础路径
+  function initBasePath() {
+    const baseEl = document.querySelector('base[href]');
+    if (baseEl && baseEl.href) {
+      // 从 base href 提取路径部分
+      try {
+        const url = new URL(baseEl.href, window.location.origin);
+        basePath = url.pathname.replace(/\/+$/, '') + '/';
+      } catch (e) {
+        basePath = '/gle/';
+      }
+    } else {
+      // 回退：从当前路径推断
+      const path = window.location.pathname;
+      const match = path.match(/^(\/gle\/)/);
+      basePath = match ? match[1] : '/gle/';
+    }
   }
 
   // ===== 背景图系统 =====
@@ -126,7 +147,7 @@
 
     try {
       showLoading(true);
-      const response = await fetch('posts/index.json');
+      const response = await fetch(basePath + 'posts/index.json');
       if (!response.ok) throw new Error('Failed to load posts index');
       postsData = await response.json();
       renderPosts(postsData);
@@ -212,7 +233,7 @@
     if (!slug) return;
 
     try {
-      const response = await fetch('posts/' + slug + '.json');
+      const response = await fetch(basePath + 'posts/' + slug + '.json');
       if (!response.ok) throw new Error('Article not found');
       const article = await response.json();
       renderArticle(article);
@@ -222,7 +243,7 @@
         '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:20px;">' +
           '<div>' +
             '<h1 style="font-size:32px;margin-bottom:16px;">文章未找到</h1>' +
-            '<a href="/" class="back-link" style="display:inline-flex;margin-top:24px;">← 返回首页</a>' +
+            '<a href="' + basePath + '" class="back-link" style="display:inline-flex;margin-top:24px;">← 返回首页</a>' +
           '</div>' +
         '</div>';
     }
@@ -233,11 +254,11 @@
     
     const date = formatDate(article.date, true);
     const tags = article.tags ? article.tags.map(function(t) {
-      return '<a href="/?tag=' + encodeURIComponent(t) + '" class="tag" style="text-decoration:none;">#' + escapeHtml(t) + '</a>';
+      return '<a href="' + basePath + '?tag=' + encodeURIComponent(t) + '" class="tag" style="text-decoration:none;">#' + escapeHtml(t) + '</a>';
     }).join('') : '';
     
     const articleHtml = '' +
-      '<a href="/" class="back-link">← 返回首页</a>' +
+      '<a href="' + basePath + '" class="back-link">← 返回首页</a>' +
       '<header class="article-header animate-in">' +
         '<span class="article-category">' + escapeHtml(article.category || '随笔') + '</span>' +
         '<h1 class="article-title">' + escapeHtml(article.title) + '</h1>' +
